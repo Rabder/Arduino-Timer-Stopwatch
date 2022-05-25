@@ -18,21 +18,21 @@ void setup() {
  lcd.setBacklight(HIGH);
  lcd.begin(16, 2);
  int touch = analogRead(A0);
- 
+
  int timer();
 
 
- 
- 
+
+
 }
 
 bool btn1 = false;
 bool btn2 = false;
 bool btn3 = false;
-byte btn; 
+byte btn;
 
 int timer() {
-   
+
   bool finish = false;
   lcd.print("TIMER");
   float sbegin = 0.00;
@@ -58,7 +58,7 @@ int timer() {
 
 
 
-    
+
     if (btn11){
       buttonAction11 = btn11 & B11000000;
       buttonNumber11 = btn11 & B00111111;
@@ -69,15 +69,15 @@ int timer() {
         break;
       }
 
-      
-      
+
+
       if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 1 && btn1 == true){
         sbegin = sbegin + 0.10;
         counting = true;
         if (sbegin == 0.60){
           smin = smin + 1;
           sbegin = 0.0;
-          MFS.write(smin+sbegin, 2);        
+          MFS.write(smin+sbegin, 2);
         }
         else if (smin == 0){
           MFS.write(sbegin, 2);
@@ -103,8 +103,8 @@ int timer() {
             ad++;
               Serial.print("IT WORKS");
               lcd.clear();
-              lcd.print("BOILED EGGS");
-              smin = 5;
+              lcd.print("POMODORO");
+              smin = 25;
               sbegin = 0;
               MFS.write(smin+sbegin, 2);
               delay(1000);
@@ -116,7 +116,7 @@ int timer() {
                 if (btn11){
                   buttonAction11 = btn11 & B11000000;
                   buttonNumber11 = btn11 & B00111111;
-                  
+
               if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 3)
               {
                 Serial.print("DIE");
@@ -139,8 +139,8 @@ int timer() {
           ad++;
               Serial.print("IT WORKS");
               lcd.clear();
-              lcd.print("PASTA");
-              smin = 8;
+              lcd.print("SHORT BREAK");
+              smin = 5;
               sbegin = 0;
               MFS.write(smin+sbegin, 2);
               delay(1000);
@@ -152,7 +152,43 @@ int timer() {
                 if (btn11){
                   buttonAction11 = btn11 & B11000000;
                   buttonNumber11 = btn11 & B00111111;
-                  
+
+              if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 3)
+              {
+                Serial.print("DIE");
+                ad = 0;
+                reback = true;
+                break;
+              }
+             }
+             if (touch < 650)
+             {
+              sbegin = 0;
+              smin = 0;
+              break;
+             }
+              }
+          lcd.clear();
+       }
+       if (ad == 2)
+       {
+          ad++;
+              Serial.print("IT WORKS");
+              lcd.clear();
+              lcd.print("LONG BREAK");
+              smin = 15;
+              sbegin = 0;
+              MFS.write(smin+sbegin, 2);
+              delay(1000);
+              while (true)
+              {
+                touch = analogRead(A0);
+                Serial.print(btn11);
+                btn11 = MFS.getButton();
+                if (btn11){
+                  buttonAction11 = btn11 & B11000000;
+                  buttonNumber11 = btn11 & B00111111;
+
               if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 3)
               {
                 Serial.print("DIE");
@@ -187,14 +223,14 @@ int timer() {
     if (btn11){
       buttonAction11 = btn11 & B11000000;
       buttonNumber11 = btn11 & B00111111;
-    
+
     if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 1 && btn1 == true){
         sbegin = sbegin + 0.10;
         counting = true;
         if (sbegin == 0.60){
           smin = smin + 1;
           sbegin = 0.0;
-          MFS.write(smin+sbegin, 2);        
+          MFS.write(smin+sbegin, 2);
         }
         else if (smin == 0){
           MFS.write(sbegin, 2);
@@ -212,9 +248,9 @@ int timer() {
     }
   }
 
-    
 
-      
+
+
       if (buttonAction11 == BUTTON_SHORT_RELEASE_IND && buttonNumber11 == 3 && counting == true or reback == true)
       {
         int i = 0;
@@ -240,10 +276,19 @@ int timer() {
           else
           {
           MFS.write(smin+sbegin, 2);
-          delay(1000);  
+          delay(1000);
           if (smin == 0 && sbegin <= 0.01){
+            MFS.beep();
+            delay(350);
+            MFS.beep();
+            delay(1000);
+            MFS.beep();
+            delay(350);
+            MFS.beep();
+            delay(1000);
+            MFS.beep(50);
             break;
-          }          
+          }
         else{
           sbegin = sbegin-0.01;
           if (sbegin <= 0.00 && smin > 0){
@@ -291,12 +336,12 @@ int timer() {
   }
 
 
-  
+
   btn11 = false;
   btn1 = false;
   buttonAction11 = 0;
   buttonNumber11 = 0;
-  
+
   return 0;
 }
 
@@ -313,24 +358,25 @@ int stopwatch()
   byte buttonNumber2 = 0;
   bool reback = false;
   while (true){
-    
+
     btn22 = MFS.getButton();
-    
+
     if (btn22 or reback == true){
       buttonNumber22 = btn22 & B00111111;
       buttonAction22 = btn22 & B11000000;
-     
-    
+
+
     if (buttonAction22 == BUTTON_LONG_PRESSED_IND && buttonNumber22 == 2){
         break;
       }
-    
+
       if (buttonNumber22 == 1 && btn22 == true or reback == true){
         Serial.print("OK");
-        
+        MFS.beep();
+
         delay(1000);
         btn22 = false;
-        
+
         while (true){
           btn22 = MFS.getButton();
           buttonNumber22 = btn22 & B00111111;
@@ -347,23 +393,23 @@ int stopwatch()
           if (sbegin >= 0.59){
             smin = smin + 1;
             sbegin = 0.0;
-        } 
+        }
           MFS.write(smin+sbegin, 2);
           delay(1000);
         }
       }
      }
-      
+
       if (btn2 == false){
         Serial.print("ITS HAPPENING");
         while(true)
         {
-    
+
             btn22 = MFS.getButton();
             if (btn22){
                buttonNumber22 = btn22 & B00111111;
                buttonAction22 = btn22 & B11000000;
-    
+
             if (buttonAction22 == BUTTON_LONG_PRESSED_IND)
             {
               return 0;
@@ -379,30 +425,30 @@ int stopwatch()
             }
           }
       }
-        
+
       }
-      
-   
+
+
   }
-  
+
   return 0;
 }
 
 int watch()
 {
-  
+
 }
 
- 
+
 
 void loop(){
 
   MFS.write("--.--");
-  
+
   btn = MFS.getButton();
-  
+
   lcd.clear();
-  
+
 
   if (btn)
  {
@@ -417,7 +463,7 @@ void loop(){
  {
  Serial.println("PRESSED");
  }
- 
+
  else if (buttonAction == BUTTON_SHORT_RELEASE_IND)
  {
   if (buttonNumber == 1)
@@ -431,7 +477,7 @@ void loop(){
     Serial.println("stopwatch");
     stopwatch();
   }
-  else 
+  else
   {
     Serial.println("SHORT_RELEASE");
     watch();
@@ -439,5 +485,5 @@ void loop(){
  }
  }
 
-  
+
 }
